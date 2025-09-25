@@ -68,7 +68,14 @@ class _ResultPageState extends State<ResultPage> {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         setState(() {
-          _translatedText = responseData['translation'];
+          // Handle the case where translation is an array/list
+          var translation = responseData['translation'];
+          if (translation is List) {
+            // Convert the structured data to a readable string
+            _translatedText = _formatStructuredTranslation(translation);
+          } else {
+            _translatedText = translation.toString();
+          }
           _status = 'Terjemahan berhasil!';
         });
       } else {
@@ -83,6 +90,43 @@ class _ResultPageState extends State<ResultPage> {
         'Terjadi kesalahan jaringan. Pastikan server Flask berjalan.\nError: $e';
       });
     }
+  }
+
+  String _formatStructuredTranslation(List<dynamic> lines) {
+    StringBuffer result = StringBuffer();
+    
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i] is List) {
+        List<dynamic> line = lines[i];
+        StringBuffer lineText = StringBuffer();
+        
+        for (var charGroup in line) {
+          if (charGroup is Map) {
+            // Handle above characters
+            if (charGroup['above'] != null && charGroup['above'].isNotEmpty) {
+              lineText.write(charGroup['above'].join(''));
+            }
+            
+            // Handle base character
+            if (charGroup['base'] != null) {
+              lineText.write(charGroup['base']);
+            }
+            
+            // Handle below characters
+            if (charGroup['below'] != null && charGroup['below'].isNotEmpty) {
+              lineText.write(charGroup['below'].join(''));
+            }
+          }
+        }
+        
+        result.write(lineText.toString());
+        if (i < lines.length - 1) {
+          result.write('\n'); // Add newline between lines
+        }
+      }
+    }
+    
+    return result.toString();
   }
 
   @override
