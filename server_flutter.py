@@ -35,26 +35,28 @@ def process_image(img):
             'bbox': [x1, y1, x2, y2]
         })
 
+    if not detections:
+        return "No objects detected."
+
     # 2. Group detections into lines
     lines = []
-    if detections:
-        detections.sort(key=lambda d: d['bbox'][1])
-        current_line = [detections[0]]
-        for det in detections[1:]:
-            avg_line_y_center = sum((d['bbox'][1] + d['bbox'][3]) / 2 for d in current_line) / len(current_line)
-            det_y_center = (det['bbox'][1] + det['bbox'][3]) / 2
-            avg_line_height = sum(d['bbox'][3] - d['bbox'][1] for d in current_line) / len(current_line)
-            tolerance = max(avg_line_height * 0.5, img_height * 0.02)
+    detections.sort(key=lambda d: d['bbox'][1])
+    current_line = [detections[0]]
+    for det in detections[1:]:
+        avg_line_y_center = sum((d['bbox'][1] + d['bbox'][3]) / 2 for d in current_line) / len(current_line)
+        det_y_center = (det['bbox'][1] + det['bbox'][3]) / 2
+        avg_line_height = sum(d['bbox'][3] - d['bbox'][1] for d in current_line) / len(current_line)
+        tolerance = max(avg_line_height * 0.5, img_height * 0.02)
 
-            if abs(det_y_center - avg_line_y_center) < tolerance:
-                current_line.append(det)
-            else:
-                lines.append(current_line)
-                current_line = [det]
-        lines.append(current_line)
+        if abs(det_y_center - avg_line_y_center) < tolerance:
+            current_line.append(det)
+        else:
+            lines.append(current_line)
+            current_line = [det]
+    lines.append(current_line)
 
-    # 3. Structure the lines
-    output_lines = []
+    # 3. Structure the lines and format the final text
+    final_text_output = []
     for i, line in enumerate(lines):
         line.sort(key=lambda d: d['bbox'][0])
         used_indices = set()
@@ -77,6 +79,7 @@ def process_image(img):
                     elif other_bbox[1] > base_bbox[1] + (base_bbox[3] - base_bbox[1]) / 2:
                         below_chars.append(other_char)
                         used_indices.add(k)
+
             char_group = {
                 'base': base_char['class_name'],
                 'above': [c['class_name'] for c in sorted(above_chars, key=lambda d: d['bbox'][0])],
@@ -86,9 +89,19 @@ def process_image(img):
             structured_line.append(char_group)
 
         structured_line.sort(key=lambda g: g['x_pos'])
-        output_lines.append(structured_line)
 
-    return output_lines
+        line_text_parts = []
+        for group in structured_line:
+            text = group['base']
+            if group['above']:
+                text += f" (Above: {', '.join(group['above'])})"
+            if group['below']:
+                text += f" (Below: {', '.join(group['below'])})"
+            line_text_parts.append(text)
+
+        final_text_output.append(" ".join(line_text_parts))
+
+    return "\n".join(final_text_output)
 
 @app.route('/translate', methods=['POST'])
 def translate_image():
