@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'config.dart'; // Import the new config file
 
 class CapturePage extends StatefulWidget {
   const CapturePage({super.key});
@@ -28,7 +29,7 @@ class _CapturePageState extends State<CapturePage> {
     try {
       // 10.0.2.2 is the special address for the Android emulator
       // to access the host machine's localhost.
-      var uri = Uri.parse('http://10.0.2.2:5000/translate');
+      var uri = Uri.parse('$serverUrl/translate'); // var uri = Uri.parse('http://10.0.2.2:5000/translate');
       var request = http.MultipartRequest('POST', uri);
       request.files.add(
         await http.MultipartFile.fromPath('image', imageFile.path),

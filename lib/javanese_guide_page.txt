@@ -1,0 +1,36 @@
+Karakter Dasar dalam Sistem Tulisan Jawa
+Sistem penulisan Jawa memiliki dua puluh karakter utama yang populer disebut hanacaraka. Karakter-karakter tersebut dikelompokkan ke dalam empat susunan baris:
+•	ꦲ ꦤ ꦕ ꦫ ꦏ ha na ca ra ka
+•	ꦢ ꦠ ꦱ ꦮ ꦭ da ta sa wa la
+•	ꦥ ꦝ ꦗ ꦪ ꦚ pa dha ja ya nya
+•	ꦩ ꦒ ꦧ ꦛ ꦔ ma ga ba tha nga
+Masing-masing karakter ini membawa nilai filosofis tersendiri. Lima karakter awal, misalnya, dapat dimaknai sebagai representasi: 'Ha' melambangkan Sang Pencipta, 'Na' merepresentasikan manusia, 'Ca' simbol dari pencerahan, 'Ra' menggambarkan emosi, dan 'Ka' mewakili konsep tindakan dan akibatnya.
+Penanda Vokal dalam Tulisan Jawa
+Penanda vokal merupakan simbol tambahan yang mengubah pengucapan vokal dari karakter utama. Beberapa penanda vokal yang penting meliputi:
+•	Wulu: Membuat bunyi vokal berubah ke "i". Misalnya, karakter "ka" (ꦏ) yang diberi wulu berubah menjadi "ki" (ꦏꦶ).
+•	Suku: Membuat bunyi vokal berubah ke "u". Misalnya, karakter "pa" (ꦥ) yang diberi suku berubah menjadi "pu" (ꦥꦸ).
+•	Pepet: Membuat bunyi vokal berubah ke "e" (bunyi seperti dalam "ember"). Misalnya, karakter "da" (ꦢ) yang diberi pepet berubah menjadi "de" (ꦢꦼ).
+•	Taling: Membuat bunyi vokal berubah ke "é" (bunyi seperti dalam "séga"). Misalnya, karakter "ra" (ꦫ) yang diberi taling berubah menjadi "ré" (ꦫꦺ).
+•	Taling Tarung: Membuat bunyi vokal berubah ke "o". Misalnya, karakter "ta" (ꦠ) yang diberi taling tarung berubah menjadi "to" (ꦠꦺꦴ).
+Bentuk Konsonan Penutup
+Bentuk konsonan penutup adalah variasi dari karakter dasar yang digunakan untuk menghilangkan bunyi vokal bawaan dari karakter sebelumnya. Bentuk ini ditempatkan di bagian bawah karakter dasar untuk menulis silabel tertutup. Contoh implementasinya:
+•	Karakter "ma" (ꦩ) yang ditambahkan bentuk penutup "ba" (꧀ꦧ) menghasilkan "mba" (ꦩ꧀ꦧ).
+•	Karakter "ka" (ꦏ) yang ditambahkan bentuk penutup "ka" (꧀ꦏ) menghasilkan "kka" (ꦏ꧀ꦏ).
+Karakter Khusus: Murda dan Rekan
+Dalam sistem tulisan Jawa terdapat dua kategori karakter istimewa:
+•	Karakter Murda: Memiliki fungsi serupa dengan huruf besar, dipakai untuk menuliskan karakter pembuka pada identitas seseorang, lokasi geografis, atau istilah yang memerlukan penghormatan khusus. Ada delapan karakter yang memiliki varian Murda. Contoh pengaplikasiannya:
+1.	ꦗꦏꦂꦠ (Jakarta)
+2.	ꦫꦩ (Rama)
+3.	ꦢꦮꦶ (Dewi)
+•	Karakter Rekan: Merupakan karakter-karakter untuk menuliskan bunyi-bunyi yang berasal dari bahasa luar (seperti bahasa Arab) yang tidak terdapat dalam bunyi asli bahasa Jawa. Contohnya:
+o	ꦗ꦳ꦸꦩ꧀ꦄꦠ꧀ (Jumat)
+o	ꦱ꦳ꦭꦠ꧀ (Sholat)
+o	ꦯ꦳ꦴꦭꦺꦃ (Sholeh)
+Karakter Vokal Mandiri
+Karakter vokal mandiri adalah simbol vokal yang dapat berdiri sendiri dalam sistem tulisan Jawa, mencakup lima bentuk untuk bunyi a, i, u, é, dan o. Tidak seperti penanda vokal, karakter ini tidak bergantung pada karakter lain dan umumnya digunakan untuk menuliskan silabel vokal di permulaan kata.
+Sistem Angka Jawa
+Sistem angka dalam tulisan Jawa memiliki bentuk simbolnya sendiri yang khas. Sebagai ilustrasi, angka tiga direpresentasikan dengan "꧓", angka tujuh dengan "꧗", dan angka dua puluh dengan "꧒꧐".
+Sistem tulisan Jawa juga memiliki seperangkat simbol pungtuasi tersendiri untuk mengatur jeda dan tekanan dalam teks. Beberapa simbol pungtuasi utama mencakup:
+•	Pada lingsa (꧈): Memiliki fungsi yang mirip dengan koma (,).
+•	Pada lungsi (꧉): Memiliki fungsi yang mirip dengan titik (.).
+•	Pada pangkat (꧁ ꧂): Memiliki fungsi yang mirip dengan tanda kutip (" ").

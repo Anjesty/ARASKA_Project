@@ -1,18 +1,692 @@
 import 'package:flutter/material.dart';
+import 'javanese_guide_page.dart';
+import 'javanese_history_page.dart'; // Import halaman sejarah yang baru
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Home Page',
-        style: TextStyle(fontSize: 24, color: Colors.white),
+    return Scaffold(
+      backgroundColor: const Color(0xFF121212),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Visual effect: decorative circles
+            Positioned(
+              top: -50,
+              left: -50,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue.withOpacity(0.1),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -100,
+              right: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.deepPurple.withOpacity(0.1),
+                ),
+              ),
+            ),
+            // Main content
+            ListView(
+              padding: const EdgeInsets.all(24.0),
+              children: const [
+                // Welcome message
+                Text(
+                  'Selamat Datang!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Siap menerjemahkan aksara Jawa hari ini?',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 40),
+                // Banners
+                _GuideBanner(),
+                SizedBox(height: 20),
+                _HistoryBanner(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+class _GuideBanner extends StatelessWidget {
+  const _GuideBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the guide page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const JavaneseGuidePage()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F223A),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.blue.withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            // Image/Icon on the left
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.menu_book_rounded,
+                color: Colors.blue,
+                size: 40,
+              ),
+            ),
+            const SizedBox(width: 20),
+            // Text content on the right
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Panduan Lengkap',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Aturan Aksara Jawa',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: const [
+                      Text(
+                        'Mulai belajar sekarang!',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.blue,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryBanner extends StatelessWidget {
+  const _HistoryBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the history page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const JavaneseHistoryPage()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F223A),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.purple.withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            // Image/Icon on the left
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.purple.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.history_edu_rounded,
+                color: Colors.purple,
+                size: 40,
+              ),
+            ),
+            const SizedBox(width: 20),
+            // Text content on the right
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Sejarah Aksara Jawa',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Jelajahi asal-usulnya',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: const [
+                      Text(
+                        'Lihat selengkapnya',
+                        style: TextStyle(
+                          color: Colors.purple,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.purple,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'javanese_guide_page.dart';
+//
+// class HomePage extends StatelessWidget {
+//   const HomePage({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFF121212),
+//       body: SafeArea(
+//         child: Stack(
+//           children: [
+//             // Visual effect: decorative circles
+//             Positioned(
+//               top: -50,
+//               left: -50,
+//               child: Container(
+//                 width: 200,
+//                 height: 200,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: Colors.blue.withOpacity(0.1),
+//                 ),
+//               ),
+//             ),
+//             Positioned(
+//               bottom: -100,
+//               right: -100,
+//               child: Container(
+//                 width: 300,
+//                 height: 300,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: Colors.deepPurple.withOpacity(0.1),
+//                 ),
+//               ),
+//             ),
+//             // Main content
+//             ListView(
+//               padding: const EdgeInsets.all(24.0),
+//               children: const [
+//                 // Welcome message
+//                 Text(
+//                   'Selamat Datang!',
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 32,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 SizedBox(height: 8),
+//                 Text(
+//                   'Siap menerjemahkan aksara Jawa hari ini?',
+//                   style: TextStyle(
+//                     color: Colors.white70,
+//                     fontSize: 16,
+//                   ),
+//                 ),
+//                 SizedBox(height: 40),
+//                 // Banners
+//                 _GuideBanner(),
+//                 SizedBox(height: 20),
+//                 _HistoryBanner(),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class _GuideBanner extends StatelessWidget {
+//   const _GuideBanner();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         // Navigate to the guide page
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(builder: (context) => const JavaneseGuidePage()),
+//         );
+//       },
+//       child: Container(
+//         padding: const EdgeInsets.all(20.0),
+//         decoration: BoxDecoration(
+//           color: const Color(0xFF1F223A),
+//           borderRadius: BorderRadius.circular(20),
+//           border: Border.all(color: Colors.blue.withOpacity(0.5)),
+//         ),
+//         child: Row(
+//           children: [
+//             // Image/Icon on the left
+//             Container(
+//               padding: const EdgeInsets.all(12),
+//               decoration: BoxDecoration(
+//                 color: Colors.blue.withOpacity(0.2),
+//                 borderRadius: BorderRadius.circular(16),
+//               ),
+//               child: const Icon(
+//                 Icons.menu_book_rounded,
+//                 color: Colors.blue,
+//                 size: 40,
+//               ),
+//             ),
+//             const SizedBox(width: 20),
+//             // Text content on the right
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const Text(
+//                     'Panduan Lengkap',
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 18,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 4),
+//                   const Text(
+//                     'Aturan Aksara Jawa',
+//                     style: TextStyle(
+//                       color: Colors.white70,
+//                       fontSize: 14,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 8),
+//                   Row(
+//                     children: const [
+//                       Text(
+//                         'Mulai belajar sekarang!',
+//                         style: TextStyle(
+//                           color: Colors.blue,
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.w500,
+//                         ),
+//                       ),
+//                       SizedBox(width: 4),
+//                       Icon(
+//                         Icons.arrow_forward,
+//                         color: Colors.blue,
+//                         size: 16,
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class _HistoryBanner extends StatelessWidget {
+//   const _HistoryBanner();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         // TODO: Navigate to the history page
+//       },
+//       child: Container(
+//         padding: const EdgeInsets.all(20.0),
+//         decoration: BoxDecoration(
+//           color: const Color(0xFF1F223A),
+//           borderRadius: BorderRadius.circular(20),
+//           border: Border.all(color: Colors.purple.withOpacity(0.5)),
+//         ),
+//         child: Row(
+//           children: [
+//             // Image/Icon on the left
+//             Container(
+//               padding: const EdgeInsets.all(12),
+//               decoration: BoxDecoration(
+//                 color: Colors.purple.withOpacity(0.2),
+//                 borderRadius: BorderRadius.circular(16),
+//               ),
+//               child: const Icon(
+//                 Icons.history_edu_rounded,
+//                 color: Colors.purple,
+//                 size: 40,
+//               ),
+//             ),
+//             const SizedBox(width: 20),
+//             // Text content on the right
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const Text(
+//                     'Sejarah Aksara Jawa',
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 18,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 4),
+//                   const Text(
+//                     'Jelajahi asal-usulnya',
+//                     style: TextStyle(
+//                       color: Colors.white70,
+//                       fontSize: 14,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 8),
+//                   Row(
+//                     children: const [
+//                       Text(
+//                         'Lihat selengkapnya',
+//                         style: TextStyle(
+//                           color: Colors.purple,
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.w500,
+//                         ),
+//                       ),
+//                       SizedBox(width: 4),
+//                       Icon(
+//                         Icons.arrow_forward,
+//                         color: Colors.purple,
+//                         size: 16,
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'javanese_guide_page.dart';
+//
+// class HomePage extends StatelessWidget {
+//   const HomePage({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFF121212),
+//       body: SafeArea(
+//         child: Stack(
+//           children: [
+//             // Visual effect: decorative circles
+//             Positioned(
+//               top: -50,
+//               left: -50,
+//               child: Container(
+//                 width: 200,
+//                 height: 200,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: Colors.blue.withOpacity(0.1),
+//                 ),
+//               ),
+//             ),
+//             Positioned(
+//               bottom: -100,
+//               right: -100,
+//               child: Container(
+//                 width: 300,
+//                 height: 300,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: Colors.deepPurple.withOpacity(0.1),
+//                 ),
+//               ),
+//             ),
+//             // Main content
+//             ListView(
+//               padding: const EdgeInsets.all(24.0),
+//               children: const [
+//                 // Welcome message
+//                 Text(
+//                   'Selamat Datang!',
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 32,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 SizedBox(height: 8),
+//                 Text(
+//                   'Siap menerjemahkan aksara Jawa hari ini?',
+//                   style: TextStyle(
+//                     color: Colors.white70,
+//                     fontSize: 16,
+//                   ),
+//                 ),
+//                 SizedBox(height: 40),
+//                 // Banner
+//                 _GuideBanner(),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class _GuideBanner extends StatelessWidget {
+//   const _GuideBanner();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () {
+//         // Navigate to the guide page
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(builder: (context) => const JavaneseGuidePage()),
+//         );
+//       },
+//       child: Container(
+//         padding: const EdgeInsets.all(20.0),
+//         decoration: BoxDecoration(
+//           color: const Color(0xFF1F223A),
+//           borderRadius: BorderRadius.circular(20),
+//           border: Border.all(color: Colors.blue.withOpacity(0.5)),
+//         ),
+//         child: Row(
+//           children: [
+//             // Image/Icon on the left
+//             Container(
+//               padding: const EdgeInsets.all(12),
+//               decoration: BoxDecoration(
+//                 color: Colors.blue.withOpacity(0.2),
+//                 borderRadius: BorderRadius.circular(16),
+//               ),
+//               child: const Icon(
+//                 Icons.menu_book_rounded,
+//                 color: Colors.blue,
+//                 size: 40,
+//               ),
+//             ),
+//             const SizedBox(width: 20),
+//             // Text content on the right
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const Text(
+//                     'Panduan Lengkap',
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 18,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 4),
+//                   const Text(
+//                     'Aturan Aksara Jawa',
+//                     style: TextStyle(
+//                       color: Colors.white70,
+//                       fontSize: 14,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 8),
+//                   Row(
+//                     children: const [
+//                       Text(
+//                         'Mulai belajar sekarang!',
+//                         style: TextStyle(
+//                           color: Colors.blue,
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.w500,
+//                         ),
+//                       ),
+//                       SizedBox(width: 4),
+//                       Icon(
+//                         Icons.arrow_forward,
+//                         color: Colors.blue,
+//                         size: 16,
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+//
+// class HomePage extends StatelessWidget {
+//   const HomePage({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Center(
+//       child: Text(
+//         'Home Page',
+//         style: TextStyle(fontSize: 24, color: Colors.white),
+//       ),
+//     );
+//   }
+// }
 
 
 
