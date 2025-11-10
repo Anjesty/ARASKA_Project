@@ -20,9 +20,9 @@ class JavaneseGuidePage extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16.0),
               child: Image.asset(
-                'assets/images/hanacaraka.jpg', // Changed from Image.network
+                'assets/images/header art.jpeg', // Changed from Image.network
                 height: 200,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitHeight,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     height: 200,
@@ -55,6 +55,11 @@ class JavaneseGuidePage extends StatelessWidget {
           _buildSectionTitle('Penanda Vokal dalam Tulisan Jawa'),
           _buildParagraph(
               'Penanda vokal merupakan simbol tambahan yang mengubah pengucapan vokal dari karakter utama. Beberapa penanda vokal yang penting meliputi:'),
+          _buildImageSection(
+            'assets/images/sandhangan.png',
+            height: 310,
+            fit: BoxFit.contain,
+          ),
           _buildBulletPoint(
               'Wulu: Membuat bunyi vokal berubah ke "i". Misalnya, karakter "ka" (ꦏ) yang diberi wulu berubah menjadi "ki" (ꦏꦶ).'),
           _buildBulletPoint(
@@ -69,6 +74,11 @@ class JavaneseGuidePage extends StatelessWidget {
           _buildSectionTitle('Bentuk Konsonan Penutup'),
           _buildParagraph(
               'Bentuk konsonan penutup adalah variasi dari karakter dasar yang digunakan untuk menghilangkan bunyi vokal bawaan dari karakter sebelumnya. Bentuk ini ditempatkan di bagian bawah karakter dasar untuk menulis silabel tertutup. Contoh implementasinya:'),
+          _buildImageSection(
+            'assets/images/pasangan.png',
+            height: 350,
+            fit: BoxFit.contain,
+          ),
           _buildBulletPoint(
               'Karakter "ma" (ꦩ) yang ditambahkan bentuk penutup "ba" (꧀ꦧ) menghasilkan "mba" (ꦩ꧀ꦧ).'),
           _buildBulletPoint(
@@ -79,16 +89,36 @@ class JavaneseGuidePage extends StatelessWidget {
               'Dalam sistem tulisan Jawa terdapat dua kategori karakter istimewa:'),
           _buildBulletPoint(
               'Karakter Murda: Memiliki fungsi serupa dengan huruf besar, dipakai untuk menuliskan karakter pembuka pada identitas seseorang, lokasi geografis, atau istilah yang memerlukan penghormatan khusus. Ada delapan karakter yang memiliki varian Murda.'),
+          _buildImageSection(
+            'assets/images/murda.png',
+            height: 250,
+            fit: BoxFit.contain,
+          ),
           _buildBulletPoint(
               'Karakter Rekan: Merupakan karakter-karakter untuk menuliskan bunyi-bunyi yang berasal dari bahasa luar (seperti bahasa Arab) yang tidak terdapat dalam bunyi asli bahasa Jawa.'),
+          _buildImageSection(
+            'assets/images/rekan.png',
+            height: 250,
+            fit: BoxFit.contain,
+          ),
           const SizedBox(height: 20),
           _buildSectionTitle('Karakter Vokal Mandiri'),
           _buildParagraph(
               'Karakter vokal mandiri adalah simbol vokal yang dapat berdiri sendiri dalam sistem tulisan Jawa, mencakup lima bentuk untuk bunyi a, i, u, é, dan o. Tidak seperti penanda vokal, karakter ini tidak bergantung pada karakter lain dan umumnya digunakan untuk menuliskan silabel vokal di permulaan kata.'),
           const SizedBox(height: 20),
+          _buildImageSection(
+            'assets/images/vokal.png',
+            height: 50,
+            fit: BoxFit.contain,
+          ),
           _buildSectionTitle('Sistem Angka dan Pungtuasi Jawa'),
           _buildParagraph(
               'Sistem angka dalam tulisan Jawa memiliki bentuk simbolnya sendiri yang khas. Sebagai ilustrasi, angka tiga direpresentasikan dengan "꧓", angka tujuh dengan "꧗", dan angka dua puluh dengan "꧒꧐".'),
+          _buildImageSection(
+            'assets/images/wilangan.png',
+            height: 250,
+            fit: BoxFit.contain,
+          ),
           _buildParagraph(
               'Sistem tulisan Jawa juga memiliki seperangkat simbol pungtuasi tersendiri untuk mengatur jeda dan tekanan dalam teks. Beberapa simbol pungtuasi utama mencakup:'),
           _buildBulletPoint(
@@ -97,6 +127,16 @@ class JavaneseGuidePage extends StatelessWidget {
               'Pada lungsi (꧉): Memiliki fungsi yang mirip dengan titik (.).'),
           _buildBulletPoint(
               'Pada pangkat (꧁ ꧂): Memiliki fungsi yang mirip dengan tanda kutip (" ").'),
+          _buildImageSection(
+            'assets/images/pada1.png',
+            height: 450,
+            fit: BoxFit.contain,
+          ),
+          _buildImageSection(
+            'assets/images/pada2.png',
+            height: 450,
+            fit: BoxFit.contain,
+          ),
         ],
       ),
     );
