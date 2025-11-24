@@ -49,7 +49,7 @@ def process_image(img):
         avg_center_y = sum((d['bbox'][1] + d['bbox'][3]) / 2 for d in current) / len(current)
         det_center_y = (det['bbox'][1] + det['bbox'][3]) / 2
         avg_h = sum(d['bbox'][3] - d['bbox'][1] for d in current) / len(current)
-        tolerance = max(avg_h * 0.5, img_height * 0.2)
+        tolerance = max(avg_h * 0.5, img_height * 0.1)
         if abs(det_center_y - avg_center_y) < tolerance:
             current.append(det)
         else:
