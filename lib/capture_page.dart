@@ -105,7 +105,7 @@ class _CapturePageState extends State<CapturePage> {
                   borderRadius: BorderRadius.circular(12.0),
                   child: Image.file(
                     _imageFile!,
-                    height: 250,
+                    height: 450,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
