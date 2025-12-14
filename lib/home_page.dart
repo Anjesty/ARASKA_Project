@@ -54,13 +54,16 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   top: 20,
                   left: 150,
-                  child: Opacity(
-                    opacity: 0.65,
-                    child: Image.asset(
-                      'assets/images/circle.png',
-                      width: 380,
-                      height: 380,
-                      fit: BoxFit.contain,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.65,
+                      child: Image.asset(
+                        'assets/images/circle.png',
+                        width: 380,
+                        height: 380,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -69,15 +72,18 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   top: 40,
                   right: -110,
-                  child: Opacity(
-                    opacity: 0.9,
-                    child: Transform.flip(
-                      flipX: true,
-                      child: Image.asset(
-                        'assets/images/wayang.png',
-                        width: 360,
-                        height: 400,
-                        fit: BoxFit.contain,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Transform.flip(
+                        flipX: true,
+                        child: Image.asset(
+                          'assets/images/wayang.png',
+                          width: 360,
+                          height: 400,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
@@ -87,13 +93,16 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   top: 120,
                   left: 170,
-                  child: Opacity(
-                    opacity: 0.9,
-                    child: Image.asset(
-                      'assets/images/gamelan.png',
-                      width: 350,
-                      height: 350,
-                      fit: BoxFit.contain,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Image.asset(
+                        'assets/images/gamelan.png',
+                        width: 350,
+                        height: 350,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -102,13 +111,16 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   bottom: 200,
                   right: -30,
-                  child: Opacity(
-                    opacity: 0.9,
-                    child: Image.asset(
-                      'assets/images/wayang.png',
-                      width: 140,
-                      height: 140,
-                      fit: BoxFit.contain,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Image.asset(
+                        'assets/images/wayang.png',
+                        width: 140,
+                        height: 140,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -189,13 +201,16 @@ class _HomePageState extends State<HomePage> {
                                   Positioned(
                                     bottom: -30,
                                     right: 0,
-                                    child: Opacity(
-                                      opacity: 0.1,
-                                      child: Image.asset(
-                                        'assets/images/gamelan.png',
-                                        width: 380,
-                                        height: 320,
-                                        fit: BoxFit.contain,
+                                    child: IgnorePointer(
+                                      ignoring: true,
+                                      child: Opacity(
+                                        opacity: 0.1,
+                                        child: Image.asset(
+                                          'assets/images/gamelan.png',
+                                          width: 380,
+                                          height: 320,
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -216,15 +231,18 @@ class _HomePageState extends State<HomePage> {
                 Positioned(
                   top: 150,
                   left: -120,
-                  child: Opacity(
-                    opacity: 0.9,
-                    child: Transform.rotate(
-                      angle: -30 * math.pi / 180,
-                      child: Image.asset(
-                        'assets/images/wayang_panggon.png',
-                        width: 300,
-                        height: 220,
-                        fit: BoxFit.contain,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Transform.rotate(
+                        angle: -30 * math.pi / 180,
+                        child: Image.asset(
+                          'assets/images/wayang_panggon.png',
+                          width: 300,
+                          height: 220,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
