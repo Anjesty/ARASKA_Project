@@ -125,6 +125,27 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
+                // Ornamen dekoratif bawah (di belakang konten)
+                Positioned(
+                  top: 150,
+                  left: -120,
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Transform.rotate(
+                        angle: -30 * math.pi / 180,
+                        child: Image.asset(
+                          'assets/images/wayang_panggon.png',
+                          width: 300,
+                          height: 220,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
                 // Main content dengan LayoutBuilder
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -190,14 +211,7 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Stack(
                                 children: [
-                                  Column(
-                                    children: const [
-                                      _GuideBanner(),
-                                      SizedBox(height: 24),
-                                      _HistoryBanner(),
-                                    ],
-                                  ),
-                                  // Gambar Gamelan di tengah (antara dua banner)
+                                  // Gambar Gamelan di tengah (antara dua banner) berada di belakang konten
                                   Positioned(
                                     bottom: -30,
                                     right: 0,
@@ -214,6 +228,13 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
+                                  Column(
+                                    children: const [
+                                      _GuideBanner(),
+                                      SizedBox(height: 24),
+                                      _HistoryBanner(),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -227,26 +248,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
 
-                // Ornamen dekoratif bawah
-                Positioned(
-                  top: 150,
-                  left: -120,
-                  child: IgnorePointer(
-                    ignoring: true,
-                    child: Opacity(
-                      opacity: 0.9,
-                      child: Transform.rotate(
-                        angle: -30 * math.pi / 180,
-                        child: Image.asset(
-                          'assets/images/wayang_panggon.png',
-                          width: 300,
-                          height: 220,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                
               ],
             ),
           ),
