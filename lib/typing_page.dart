@@ -39,13 +39,17 @@ class _TypingPageState extends State<TypingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
+    return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
-              child: _MainTranslatorCard(),
+              child: MediaQuery.removeViewInsets(
+                context: context,
+                removeBottom: true,
+                child: const _MainTranslatorCard(),
+              ),
             ),
           ],
         ),
@@ -298,7 +302,11 @@ class _MainTranslatorCardState extends State<_MainTranslatorCard> {
     );
   }
 
-  Widget _glyphKey({required String label, required VoidCallback onPressed}) {
+  Widget _glyphKey({
+    required String label,
+    required VoidCallback onPressed,
+    bool useJavaneseFont = true,
+  }) {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
@@ -309,10 +317,16 @@ class _MainTranslatorCardState extends State<_MainTranslatorCard> {
       ),
       child: Text(
         label,
-        style: GoogleFonts.notoSansJavanese(
-          fontSize: 18,
-          color: Colors.white,
-        ),
+        style: useJavaneseFont
+            ? GoogleFonts.notoSansJavanese(
+                fontSize: 18,
+                color: Colors.white,
+              )
+            : const TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
       ),
     );
   }
