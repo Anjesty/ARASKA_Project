@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'config.dart'; // Import the new config file
+import 'transliteration_history.dart';
+import 'tts_utils.dart';
 
 class CapturePage extends StatefulWidget {
   const CapturePage({super.key});
@@ -21,16 +23,6 @@ class _CapturePageState extends State<CapturePage> {
   final ImagePicker _picker = ImagePicker();
   final FlutterTts _tts = FlutterTts();
   bool _ttsReady = false;
-
-  String _ttsNormalize(String text) {
-    // Taling (e`) -> "eh" to bias pronunciation toward /e/ (as in "lele").
-    // Pepet (e') -> "e".
-    return text
-        .replaceAll('e`', 'eh')
-        .replaceAll("e'", 'e')
-        .replaceAll('`', '')
-        .replaceAll("'", '');
-  }
 
   @override
   void initState() {
@@ -66,7 +58,7 @@ class _CapturePageState extends State<CapturePage> {
       return;
     }
 
-    final speakText = _ttsNormalize(text);
+    final speakText = normalizeForTts(text);
     await _tts.stop();
     await _tts.speak(speakText);
   }
@@ -104,9 +96,16 @@ class _CapturePageState extends State<CapturePage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+        final translationText = responseData['translation'].toString();
         setState(() {
-          _translation = responseData['translation'].toString();
+          _translation = translationText;
         });
+        if (translationText.trim().isNotEmpty) {
+          await TransliterationHistory.instance.add(
+            translationText.trim(),
+            imagePath: imageFile.path,
+          );
+        }
       } else {
         setState(() {
           _error = 'Server Error: ${response.reasonPhrase}';

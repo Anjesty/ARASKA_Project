@@ -35,6 +35,9 @@ dependencies:
   camera: ^0.11.0+1     # For custom camera UI
   http: ^1.2.1        # For sending image to server
   flutter_tts: ^3.8.5 # Text-to-speech
+  shared_preferences: ^2.2.3 # Persist history
+  path_provider: ^2.1.4 # Cache images
+  path: ^1.9.0 # Path utilities
 
 
   # The following adds the Cupertino Icons font to your application.

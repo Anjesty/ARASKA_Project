@@ -3,8 +3,11 @@ import 'home_page.dart';
 import 'typing_page.dart';
 import 'audio_page.dart';
 import 'capture_page.dart';
+import 'transliteration_history.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await TransliterationHistory.instance.load();
   runApp(const MyApp());
 }
 
