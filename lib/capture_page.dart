@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'config.dart'; // Import the new config file
 
 class CapturePage extends StatefulWidget {
@@ -18,6 +19,69 @@ class _CapturePageState extends State<CapturePage> {
   bool _isLoading = false;
   String? _error;
   final ImagePicker _picker = ImagePicker();
+  final FlutterTts _tts = FlutterTts();
+  bool _ttsReady = false;
+
+  String _ttsNormalize(String text) {
+    // Taling (e`) -> "eh" to bias pronunciation toward /e/ (as in "lele").
+    // Pepet (e') -> "e".
+    return text
+        .replaceAll('e`', 'eh')
+        .replaceAll("e'", 'e')
+        .replaceAll('`', '')
+        .replaceAll("'", '');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initTts();
+  }
+
+  Future<void> _initTts() async {
+    try {
+      await _tts.setLanguage('id-ID');
+      await _tts.setSpeechRate(0.45);
+      await _tts.setPitch(1.0);
+      await _tts.setVolume(1.0);
+      _ttsReady = true;
+    } catch (e) {
+      _ttsReady = false;
+    }
+  }
+
+  Future<void> _speakTranslation() async {
+    if (!_ttsReady) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Text-to-speech belum siap.')),
+      );
+      return;
+    }
+
+    final text = _translation?.trim();
+    if (text == null || text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Belum ada hasil transliterasi.')),
+      );
+      return;
+    }
+
+    final speakText = _ttsNormalize(text);
+    await _tts.stop();
+    await _tts.speak(speakText);
+  }
+
+  Future<void> _stopTts() async {
+    if (_ttsReady) {
+      await _tts.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
 
   Future<void> _uploadAndTranslate(File imageFile) async {
     setState(() {
@@ -41,7 +105,7 @@ class _CapturePageState extends State<CapturePage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         setState(() {
-          _translation = responseData['translation'];
+          _translation = responseData['translation'].toString();
         });
       } else {
         setState(() {
@@ -130,6 +194,24 @@ class _CapturePageState extends State<CapturePage> {
                       style: const TextStyle(fontSize: 24, color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
+                  ),
+                if (_translation != null) const SizedBox(height: 16),
+                if (_translation != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _speakTranslation,
+                        icon: const Icon(Icons.volume_up_outlined),
+                        label: const Text('Dengarkan'),
+                      ),
+                      const SizedBox(width: 12),
+                      OutlinedButton.icon(
+                        onPressed: _stopTts,
+                        icon: const Icon(Icons.stop_circle_outlined),
+                        label: const Text('Stop'),
+                      ),
+                    ],
                   ),
                 const SizedBox(height: 30),
                 Row(
