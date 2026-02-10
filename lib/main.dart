@@ -64,8 +64,8 @@ class _MyAppState extends State<MyApp> {
               label: 'Typing',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.mic_none_outlined),
-              label: 'Audio',
+              icon: Icon(Icons.history_outlined),
+              label: 'Riwayat',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.camera_alt_outlined),
