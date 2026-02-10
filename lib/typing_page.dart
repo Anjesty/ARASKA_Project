@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'javanese_transliterator.dart';
 
 class TypingPage extends StatefulWidget {
   const TypingPage({super.key});
@@ -62,17 +64,15 @@ class _MainTranslatorCard extends StatefulWidget {
 class _MainTranslatorCardState extends State<_MainTranslatorCard> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
-  String _sourceLanguage = 'Indonesia';
-  String _targetLanguage = 'English';
+  final FocusNode _inputFocus = FocusNode();
+  bool _latinToJavanese = true;
+  bool _showJavaneseKeyboard = true;
 
   @override
   void initState() {
     super.initState();
     _inputController.addListener(() {
-      // Placeholder for translation logic
-      setState(() {
-        _outputController.text = _inputController.text;
-      });
+      _translate();
     });
   }
 
@@ -80,64 +80,301 @@ class _MainTranslatorCardState extends State<_MainTranslatorCard> {
   void dispose() {
     _inputController.dispose();
     _outputController.dispose();
+    _inputFocus.dispose();
     super.dispose();
   }
 
   void _swapLanguages() {
     setState(() {
-      final tempLang = _sourceLanguage;
-      _sourceLanguage = _targetLanguage;
-      _targetLanguage = tempLang;
-
-      final tempText = _inputController.text;
-      _inputController.text = _outputController.text;
-      _outputController.text = tempText;
+      _latinToJavanese = !_latinToJavanese;
+      final previousOutput = _outputController.text;
+      _inputController.text = previousOutput;
+      _translate();
     });
   }
 
+  void _translate() {
+    final text = _inputController.text;
+    final result = _latinToJavanese
+        ? latinToJavanese(text)
+        : javaneseToLatin(text);
+    setState(() {
+      _outputController.text = result;
+    });
+  }
+
+  String get _sourceLanguage => _latinToJavanese ? 'Latin' : 'Aksara Jawa';
+  String get _targetLanguage => _latinToJavanese ? 'Aksara Jawa' : 'Latin';
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1F243F),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Column(
-        children: [
-          const _TopBar(),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showKeyboard = !_latinToJavanese && _showJavaneseKeyboard;
+        final keyboardHeight = constraints.maxHeight * 0.42;
+        return Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1F243F),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Stack(
+            children: [
+              Column(
                 children: [
+                  const _TopBar(),
                   Expanded(
-                    child: _TranslationBox(
-                      language: _sourceLanguage,
-                      controller: _inputController,
-                      isInput: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: _TranslationBox(
+                              language: _sourceLanguage,
+                              controller: _inputController,
+                              isInput: true,
+                              useJavaneseFont: !_latinToJavanese,
+                              readOnlyInput: !_latinToJavanese,
+                              focusNode: _inputFocus,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Expanded(
+                            child: _TranslationBox(
+                              language: _targetLanguage,
+                              controller: _outputController,
+                              isInput: false,
+                              useJavaneseFont: _latinToJavanese,
+                              readOnlyInput: true,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: _TranslationBox(
-                      language: _targetLanguage,
-                      controller: _outputController,
-                      isInput: false,
-                    ),
+                  _LanguageSelector(
+                    sourceLanguage: _sourceLanguage,
+                    targetLanguage: _targetLanguage,
+                    onSwap: _swapLanguages,
                   ),
+                  if (!_latinToJavanese && !showKeyboard)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _showJavaneseKeyboard = !_showJavaneseKeyboard;
+                            });
+                          },
+                          icon: const Icon(Icons.keyboard,
+                              color: Colors.white70),
+                          label: const Text(
+                            'Tampilkan Keyboard',
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
                 ],
               ),
+              if (showKeyboard)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: keyboardHeight,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1B2038),
+                      border: Border(
+                        top: BorderSide(color: Colors.white.withOpacity(0.08)),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _showJavaneseKeyboard = false;
+                              });
+                            },
+                            icon: const Icon(Icons.keyboard_hide,
+                                color: Colors.white70),
+                            label: const Text(
+                              'Sembunyikan Keyboard',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                            child: _buildJavaneseKeyboard(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildJavaneseKeyboard() {
+    final aksaraDasar = [
+      'ꦲ', 'ꦤ', 'ꦕ', 'ꦫ', 'ꦏ', 'ꦢ', 'ꦠ', 'ꦱ', 'ꦮ', 'ꦭ',
+      'ꦥ', 'ꦝ', 'ꦗ', 'ꦪ', 'ꦚ', 'ꦩ', 'ꦒ', 'ꦧ', 'ꦛ', 'ꦔ',
+    ];
+    final swara = ['ꦄ', 'ꦆ', 'ꦈ', 'ꦌ', 'ꦎ'];
+    final sandhangan = ['ꦶ', 'ꦸ', 'ꦼ', 'ꦺ', 'ꦺꦴ', '꧀'];
+    final panyigeg = ['ꦁ', 'ꦂ', 'ꦃ'];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildKeyRow('Aksara Dasar', aksaraDasar),
+        const SizedBox(height: 8),
+        _buildKeyRow('Swara', swara),
+        const SizedBox(height: 8),
+        _buildKeyRow('Sandhangan', sandhangan),
+        const SizedBox(height: 8),
+        _buildKeyRow('Panyigeg', panyigeg),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _actionKey(
+                label: 'Spasi',
+                onPressed: () => _insertText(' '),
+              ),
             ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _actionKey(
+                label: 'Hapus',
+                onPressed: _backspace,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildKeyRow(String label, List<String> keys) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
           ),
-          _LanguageSelector(
-            sourceLanguage: _sourceLanguage,
-            targetLanguage: _targetLanguage,
-            onSwap: _swapLanguages,
-          ),
-          const SizedBox(height: 20),
-        ],
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: keys
+              .map(
+                (k) => _glyphKey(
+                  label: k,
+                  onPressed: () => _insertText(k),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _glyphKey({required String label, required VoidCallback onPressed}) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.notoSansJavanese(
+          fontSize: 18,
+          color: Colors.white,
+        ),
       ),
     );
+  }
+
+  Widget _actionKey({required String label, required VoidCallback onPressed}) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      child: Text(label),
+    );
+  }
+
+  void _insertText(String text) {
+    _focusInput();
+    var start = _inputController.selection.start;
+    var end = _inputController.selection.end;
+    if (start < 0 || end < 0) {
+      start = _inputController.text.length;
+      end = _inputController.text.length;
+    }
+    final newText = _inputController.text.replaceRange(start, end, text);
+    final newSelection = start + text.length;
+    _inputController.text = newText;
+    _inputController.selection = TextSelection.collapsed(offset: newSelection);
+    _translate();
+  }
+
+  void _backspace() {
+    _focusInput();
+    var start = _inputController.selection.start;
+    var end = _inputController.selection.end;
+    if (start < 0 || end < 0) {
+      start = _inputController.text.length;
+      end = _inputController.text.length;
+    }
+    if (start != end) {
+      final newText = _inputController.text.replaceRange(start, end, '');
+      _inputController.text = newText;
+      _inputController.selection = TextSelection.collapsed(offset: start);
+      _translate();
+      return;
+    }
+    if (start == 0) return;
+    final runes = _inputController.text.runes.toList();
+    if (runes.isEmpty) return;
+    runes.removeAt(runes.length - 1);
+    final newText = String.fromCharCodes(runes);
+    final newOffset = newText.length;
+    _inputController.text = newText;
+    _inputController.selection = TextSelection.collapsed(offset: newOffset);
+    _translate();
+  }
+
+  void _focusInput() {
+    if (!_inputFocus.hasFocus) {
+      _inputFocus.requestFocus();
+    }
   }
 }
 
@@ -170,11 +407,17 @@ class _TranslationBox extends StatelessWidget {
   final String language;
   final TextEditingController controller;
   final bool isInput;
+  final bool useJavaneseFont;
+  final bool readOnlyInput;
+  final FocusNode? focusNode;
 
   const _TranslationBox({
     required this.language,
     required this.controller,
     required this.isInput,
+    required this.useJavaneseFont,
+    required this.readOnlyInput,
+    this.focusNode,
   });
 
   @override
@@ -197,13 +440,29 @@ class _TranslationBox extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
-              readOnly: !isInput,
-              style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+              focusNode: focusNode,
+              readOnly: !isInput || readOnlyInput,
+              showCursor: isInput,
+              style: useJavaneseFont
+                  ? GoogleFonts.notoSansJavanese(
+                      color: Colors.white,
+                      fontSize: 18,
+                      height: 1.6,
+                    )
+                  : const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      height: 1.5,
+                    ),
               maxLines: null, // Allows for multiline input
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter text...',
-                hintStyle: TextStyle(color: Colors.grey),
+                hintText: isInput
+                    ? (useJavaneseFont
+                        ? 'Ketik Aksara Jawa...'
+                        : 'Ketik Latin (e` untuk taling, e untuk pepet)...')
+                    : '',
+                hintStyle: const TextStyle(color: Colors.grey),
               ),
             ),
           ),
