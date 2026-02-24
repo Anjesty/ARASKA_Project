@@ -1,0 +1,9 @@
+.git
+build
+**/__pycache__
+*.pyc
+*.pyo
+*.swp
+*.swo
+*.log
+.dart_tool

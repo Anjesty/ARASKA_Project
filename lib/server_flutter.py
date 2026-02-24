@@ -5,6 +5,7 @@ from flask_cors import CORS
 from ultralytics import YOLO
 from data_label_aksara import CLASS_NAMES
 import os
+import re
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -103,6 +104,19 @@ def cari_index_class_code(class_code):
             return index
     return 'not found'
 
+def normalize_scan_translation(text):
+    """Normalize common OCR/transliteration artifacts."""
+    normalized = text
+
+    # Fix duplicated syllable after pepet that can appear as "Ke`ka" instead of "ke`".
+    normalized = re.sub(
+        r'([BCDFGHJKLMNPQRSTVWXYZ])e`([bcdfghjklmnpqrstvwxyz])a',
+        lambda m: f"{m.group(1).lower()}e`" if m.group(1).lower() == m.group(2) else m.group(0),
+        normalized,
+    )
+
+    return normalized
+
 def translate_hasil_scan(hasil_scan):
     translate = ''
     extra_activation = False
@@ -164,7 +178,7 @@ def translate_hasil_scan(hasil_scan):
                     elif aksara_list[-1]['class_code'] == 'd':
                         aksara_translate[-1] = 'dza'
                     elif aksara_list[-1]['class_code'] == 'g':
-                        aksara_transate[-1] = 'gha'
+                        aksara_translate[-1] = 'gha'
                     elif aksara_list[-1]['class_code'] == 'j':
                         aksara_translate[-1] = 'za'
                     else:
@@ -177,7 +191,7 @@ def translate_hasil_scan(hasil_scan):
                     elif aksara_list[-1]['class_code'] == 'd':
                         aksara_translate[-1] = 'dze'
                     elif aksara_list[-1]['class_code'] == 'g':
-                        aksara_transate[-1] = 'ghe'
+                        aksara_translate[-1] = 'ghe'
                     elif aksara_list[-1]['class_code'] == 'j':
                         aksara_translate[-1] = 'ze'
                     else:
@@ -218,7 +232,7 @@ def translate_hasil_scan(hasil_scan):
         for aksara in aksara_translate:
             translate = translate + aksara
         translate = translate + '\n'
-    return translate
+    return normalize_scan_translation(translate)
 
 @app.route('/translate', methods=['POST'])
 def translate_image():
