@@ -124,7 +124,12 @@ class _CapturePageState extends State<CapturePage> {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final pickedFile = await _picker.pickImage(source: source);
+      final pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 1280, // normalisasi ukuran agar konsisten di server
+        maxHeight: 1280,
+        imageQuality: 85, // kompresi ringan supaya upload lebih cepat
+      );
       if (pickedFile != null) {
         final image = File(pickedFile.path);
         setState(() {

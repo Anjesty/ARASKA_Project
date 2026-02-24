@@ -6,6 +6,7 @@ from ultralytics import YOLO
 from data_label_aksara import CLASS_NAMES
 import os
 import re
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -17,83 +18,130 @@ model = YOLO("best.pt")
 if not os.path.exists('uploads'):
     os.makedirs('uploads')
 
+def normalize_image_size(img, max_side=1280):
+    """Resize down (keep aspect ratio) so variasi resolusi HP tidak mengubah skala deteksi."""
+    h, w = img.shape[:2]
+    scale = min(1.0, float(max_side) / max(h, w))
+    if scale < 1.0:
+        new_w, new_h = int(w * scale), int(h * scale)
+        img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+    return img
+
 def process_image(img):
     """Return List[List[{'aksara': str, 'letak': 'atas'|'tengah'|'bawah'}]] sesuai kebutuhan user.
 
-    Tahap:
-    1. Deteksi semua bbox + kelas.
-    2. Kelompokkan ke baris berdasar Y-center dengan toleransi.
-    3. Untuk tiap baris, tentukan kelompok (base + aksara di atas/bawah) dengan overlap horizontal.
-    4. Susun urutan: (semua atas kiri→kanan), base, (semua bawah kiri→kanan) per cluster.
-    5. Gabung seluruh cluster menghasilkan satu list baris.
+    Perbaikan utama:
+    - Kelompok baris hanya memakai aksara tubuh (tinggi terbesar) agar sandhangan
+      atas/bawah tidak dianggap baris baru.
+    - Ambang baris dihitung dari persentil tinggi, bukan rata-rata yang bias.
+    - Sandhangan dilekatkan ke aksara tubuh terdekat via overlap horizontal dan
+      posisi vertikal relatif.
     """
     img_height = img.shape[0]
-    results = model.predict(img)
-    result = results[0]
+    result = model.predict(img)[0]
 
-    # 1. Kumpulkan deteksi
+    # 1. Kumpulkan deteksi + fitur dasar
     detections = []
-    for box in result.boxes:
+    for idx, box in enumerate(result.boxes):
         x1, y1, x2, y2 = [int(c) for c in box.xyxy[0].tolist()]
         class_id = int(box.cls[0])
         class_name = result.names[class_id]
-        detections.append({'class_name': class_name, 'bbox': [x1, y1, x2, y2]})
+        h = y2 - y1
+        w = x2 - x1
+        detections.append({
+            'id': idx,
+            'class_name': class_name,
+            'bbox': [x1, y1, x2, y2],
+            'h': h,
+            'w': w,
+            'cx': (x1 + x2) / 2.0,
+            'cy': (y1 + y2) / 2.0,
+        })
 
     if not detections:
         return []
 
-    # 2. Kelompokkan jadi baris
-    detections.sort(key=lambda d: d['bbox'][1])
-    lines = []
-    current = [detections[0]]
-    for det in detections[1:]:
-        avg_center_y = sum((d['bbox'][1] + d['bbox'][3]) / 2 for d in current) / len(current)
-        det_center_y = (det['bbox'][1] + det['bbox'][3]) / 2
-        avg_h = sum(d['bbox'][3] - d['bbox'][1] for d in current) / len(current)
-        tolerance = max(avg_h * 0.5, img_height * 0.2)
-        if abs(det_center_y - avg_center_y) < tolerance:
-            current.append(det)
-        else:
-            lines.append(current)
-            current = [det]
-    lines.append(current)
+    # 2. Tentukan aksara tubuh (basis) via persentil tinggi
+    heights = [d['h'] for d in detections]
+    height_threshold = float(np.percentile(heights, 65))
+    for d in detections:
+        d['is_base'] = d['h'] >= height_threshold
+    base_dets = [d for d in detections if d['is_base']]
+    if not base_dets:  # fallback jika semua kecil
+        base_dets = detections[:]
+        for d in base_dets:
+            d['is_base'] = True
 
-    # 3. Strukturkan per baris
+    # 3. Kelompokkan baris memakai aksara tubuh saja
+    line_gap = max(np.median([d['h'] for d in base_dets]) * 0.6, img_height * 0.03)
+    base_sorted = sorted(base_dets, key=lambda d: d['cy'])
+    lines = []  # tiap elemen: {'center': float, 'members': [id, ...]}
+    for det in base_sorted:
+        if not lines:
+            lines.append({'center': det['cy'], 'members': [det['id']]})
+            continue
+        current_center = lines[-1]['center']
+        if abs(det['cy'] - current_center) <= line_gap:
+            lines[-1]['members'].append(det['id'])
+            base_members = [d for d in base_dets if d['id'] in lines[-1]['members']]
+            lines[-1]['center'] = float(np.mean([m['cy'] for m in base_members]))
+        else:
+            lines.append({'center': det['cy'], 'members': [det['id']]})
+
+    # 4. Tambah deteksi lain ke baris terdekat (berdasar center Y)
+    already_used = {mid for ln in lines for mid in ln['members']}
+    for det in detections:
+        if det['id'] in already_used:
+            continue
+        nearest = min(lines, key=lambda ln: abs(det['cy'] - ln['center']))
+        nearest['members'].append(det['id'])
+
+    # 5. Strukturkan per baris jadi urutan aksara + sandhangan
+    id_map = {d['id']: d for d in detections}
     final_output = []
-    for line in lines:
-        line.sort(key=lambda d: d['bbox'][0])  # kiri->kanan
+    for ln in lines:
+        members = [id_map[i] for i in ln['members']]
+        bases = [m for m in members if m['is_base']]
+        if not bases:
+            bases = members[:]
+        bases.sort(key=lambda d: d['cx'])
+
         used = set()
         tokens = []
-        for i, base in enumerate(line):
-            if i in used:
-                continue
+        for base in bases:
+            used.add(base['id'])
             base_bbox = base['bbox']
-            used.add(i)
-            mid_y = base_bbox[1] + (base_bbox[3] - base_bbox[1]) / 2
-            above = []
-            below = []
-            for j, other in enumerate(line):
-                if j in used:
+            mid_y = (base_bbox[1] + base_bbox[3]) / 2.0
+            above, below = [], []
+            for other in members:
+                if other['id'] in used:
                     continue
                 obox = other['bbox']
-                overlap_x = base_bbox[0] < obox[2] and base_bbox[2] > obox[0]
-                if not overlap_x:
+                overlap_x = min(base_bbox[2], obox[2]) - max(base_bbox[0], obox[0])
+                if overlap_x <= 0 or overlap_x < 0.2 * min(base_bbox[2] - base_bbox[0], obox[2] - obox[0]):
                     continue
-                if obox[3] < mid_y:  # di atas
+                if other['cy'] < mid_y - base['h'] * 0.1:
                     above.append(other)
-                    used.add(j)
-                elif obox[1] > mid_y:  # di bawah
+                    used.add(other['id'])
+                elif other['cy'] > mid_y + base['h'] * 0.1:
                     below.append(other)
-                    used.add(j)
-            # sort horizontal
-            above.sort(key=lambda d: d['bbox'][0])
-            below.sort(key=lambda d: d['bbox'][0])
-            # tambah ke tokens
+                    used.add(other['id'])
+            above.sort(key=lambda d: d['cx'])
+            below.sort(key=lambda d: d['cx'])
+
             tokens.append({'aksara': base['class_name'], 'letak': 'tengah'})
             for b in below:
                 tokens.append({'aksara': b['class_name'], 'letak': 'bawah'})
             for a in above:
                 tokens.append({'aksara': a['class_name'], 'letak': 'atas'})
+
+        # deteksi tersisa diasumsikan aksara tubuh mandiri
+        for other in members:
+            if other['id'] in used:
+                continue
+            tokens.append({'aksara': other['class_name'], 'letak': 'tengah'})
+            used.add(other['id'])
+
         final_output.append(tokens)
 
     return final_output
@@ -250,6 +298,7 @@ def translate_image():
         filestr = file.read()
         npimg = np.frombuffer(filestr, np.uint8)
         img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        img = normalize_image_size(img)  # normalisasi resolusi agar ambang berbasis persentase konsisten
 
         processed_data = process_image(img)
         translate_result = translate_hasil_scan(processed_data)
@@ -262,5 +311,5 @@ def translate_image():
     return jsonify({'error': 'An unknown error occurred'}), 500
 
 if __name__ == '__main__':
-    # Run the app on localhost, port 5000
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True, threaded=True)
